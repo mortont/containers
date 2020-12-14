@@ -1,0 +1,24 @@
+{
+  "builders": [
+    {
+      "type": "lxd",
+      "name": "travis-arch-cuda-lxd",
+      "image": "travis-arch",
+      "output_image": "travis-arch-cuda10.2-cudnn7",
+      "publish_properties": {
+        "description": "Trav.is CUDA-oriented Arch"
+      }
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "shell",
+      "inline": [
+        "pacman -Syu --noconfirm",
+        "sudo -u travis chezmoi update",
+        "sudo -u travis chezmoi apply",
+        "sudo -u travis yay -S cudnn7-cuda10.2 --noconfirm"
+      ]
+    }
+  ]
+}

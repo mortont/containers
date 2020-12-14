@@ -1,0 +1,48 @@
+{
+  "builders": [
+    {
+      "type": "lxd",
+      "name": "travis-arch-lxd",
+      "image": "images:archlinux/current/amd64",
+      "output_image": "travis-arch",
+      "publish_properties": {
+        "description": "Trav.is base Arch"
+      }
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "shell",
+      "inline": [
+        "pacman -Syu --noconfirm",
+        "pacman -S sudo --needed base-devel --noconfirm",
+        "pacman -S neovim git python openssh --noconfirm",
+        "pacman -S python-pip fzf fish powerline ansible --noconfirm",
+        "systemctl enable sshd.service"
+      ]
+    },
+    {
+      "type": "ansible-local",
+      "clean_staging_directory": true,
+      "playbook_file": "./playbook.yml"
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "locale-gen",
+        "sudo -u travis git clone https://aur.archlinux.org/yay.git /tmp/yay",
+        "cd /tmp/yay",
+        "sudo -u travis makepkg -si --noconfirm"
+      ]
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "sudo -u travis yay -S chezmoi --noconfirm",
+        "sudo -u travis chezmoi init https://github.com/mortont/dotfiles.git",
+        "sudo -u travis chezmoi apply",
+        "rm -rf /var/log/journal"
+      ]
+    }
+  ]
+}

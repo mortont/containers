@@ -1,0 +1,40 @@
+---
+- hosts: localhost
+
+  tasks:
+  - name: Add user to container
+    user:
+      name: travis
+      shell: /usr/bin/fish
+      group: wheel
+
+  - name: Add user ssh key
+    authorized_key:
+      user: travis
+      state: present
+      key: "{{ item }}"
+    loop:
+      - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDSNUWCKfYRjjH7oPT6xw4dazoOIMnRGhVvCl+ZYGq+WgSFdPTdv1f+a06lHjuFRQJAQUd2N/zYwWGzErsvYhiC56dIDojEgpoB3Mm6yPTK4hfwaRBMsIqxADFU3Y7tLFaa3JbTTb2BjhwoB/26mXSxiEP1xlcv66p7qrrqZkaIYt5G74l5JshqVCmwFq3ydAUWLFhpyfLS6ryB8m027X+VUiRbZyLo0pnyPok5wTRGRShSIEHYRi6YIFSj8I3RuFBxUYuUcnrs/v8Y1e7nwt5iiaQ3raJCbk3dBGaTgcXG1Pm1YqL1Tt4hnWlCbwp07hgguygrQ8nt+VHJDGs+i6cB travismorton@Traviss-MacBook-Pro.local"
+      - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDPBhkLglv1yBO03E/ARnQxBG02PDgLkLMiXJIhG+BOXdSBJyPK2PV7Y1kaq3Jl2y5+rHCCa6aW3zhTBiIi2mO1jontgvq+vxaAbX3laGj58IKbWsMQSk1n67XQHRgQyAEgbhYN6Q7rMVgt+IeOEVogHcg+MOev20QTa6JTD1TZ7PZavTFQsxmlPNJo3TQr/zyzii1YGrjFMnLlDo9MzgOQnkdo75Dgrz1KKWm1Xj1TKCmGqXkrlnwHsGAPtk9YlKj6WB5S6nB/WLj5kzt69aDMLshqkiWxmzj+1GHsfYaeE2GuvGI3BIfK2ai+8zxuRtR0akBXjbgUYoiCNXteriECbpGyHff5iTB7rnG8H/dFdOBp0q2v+jYzqaMqGxVoSh7kcRxE3Ea/lb+L48aKAjzHQ6/IaDExWHOgF1s554ev1qJE4/n//THTrLMQEVurpiWFZor5In7N9f1ygEH6HbCOIkSRMp8FukPttkxUEh2UibsT0xWazJoLA3+9/M4QAg0= travis@trav.is"
+
+  - name: Allow sudo group to have passwordless sudo
+    lineinfile:
+      dest: /etc/sudoers
+      state: present
+      regexp: '^%wheel'
+      line: '%wheel ALL=(ALL) NOPASSWD: ALL'
+      validate: 'visudo -cf %s'
+
+  - name: Set Makepkg to use more cores
+    lineinfile:
+      dest: /etc/makepkg.conf
+      state: present
+      regexp: '^#MAKEFLAGS'
+      line: 'MAKEFLAGS="-j7"'
+
+  - name: Set locale
+    lineinfile:
+      dest: /etc/locale.gen
+      state: present
+      regexp: '^#  en_US.UTF-8 UTF-8'
+      line: 'en_US.UTF-8 UTF-8'

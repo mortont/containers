@@ -1,0 +1,34 @@
+{
+  "builders": [
+    {
+      "type": "lxd",
+      "name": "travis-unbt-lxd",
+      "image": "ubuntu-daily:focal",
+      "output_image": "travis-ubuntu20.04",
+      "publish_properties": {
+        "description": "Trav.is base Ubuntu 20.04"
+      }
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "shell",
+      "inline": [
+        "apt-get update",
+        "apt-get install software-properties-common --yes",
+        "apt-add-repository ppa:neovim-ppa/stable",
+        "apt-get update",
+        "apt remove unattended-upgrades --yes",
+        "apt-get install python3-venv fish python3-pip powerline fish --yes",
+        "apt-get install ninja-build gettext libtool libtool-bin autoconf --yes",
+        "apt-get install automake cmake g++ pkg-config unzip neovim --yes",
+        "python3 -m pip install ansible"
+      ]
+    },
+    {
+      "type": "ansible-local",
+      "clean_staging_directory": true,
+      "playbook_file": "./playbook.yml"
+    }
+  ]
+}
