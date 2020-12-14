@@ -25,6 +25,8 @@ And if it's a GPU image, find the PCI id of your device and pass it through to t
 ```
 lspci -nnn | grep -i nvidia
 57:00.0 3D controller [0302]: NVIDIA Corporation TU117M [GeForce GTX 1650 Mobile / Max-Q] [10de:1f91] (rev ff)
+[may need to enable your GPU DRM driver]
+sudo modprobe nvidia-drm
 lxc config device add <name> gpu gpu pci="0000:57:00.0"
 ```
 ## Usage
